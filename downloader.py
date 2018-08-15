@@ -20,13 +20,13 @@ class Downloader:
         return logger
 
     def download(self):
-        self.logger.info(f"Starting download of {self.filename}")
+        self.logger.info(f"Downloading {self.filename}")
         self.stream.download()
 
     def convert_to_mp3(self, stream, file_handle):
         self.export(self.filename)
         self.remove()
-        self.logger.info(f"Successfully downloaded and converted {self.yt.title}")
+        self.logger.info(f"Successfully converted {self.yt.title}\n")
 
     def export(self, file_handle):
         file = self.filename.split('.')[0] + ".mp3"
