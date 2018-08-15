@@ -1,4 +1,6 @@
 import os
+import logging
+
 from pytube import YouTube
 from pydub import AudioSegment
 
@@ -11,14 +13,20 @@ class Downloader:
         self.logger = self.configure_logging()
 
     def configure_logging(self):
-        pass
+        logger = logging.getLogger(__name__)
+        handler = logging.StreamHandler()
+        logger.addHandler(handler)
+        logger.setLevel(logging.INFO)
+        return logger
 
     def download(self):
+        self.logger.info(f"Starting download of {self.filename}")
         self.stream.download()
 
     def convert_to_mp3(self, stream, file_handle):
         self.export(self.filename)
         self.remove()
+        self.logger.info(f"Successfully downloaded and converted {self.yt.title}")
 
     def export(self, file_handle):
         file = self.filename.split('.')[0] + ".mp3"
@@ -29,6 +37,7 @@ class Downloader:
             raise ConvertError
 
     def remove(self):
+        self.logger.info(f"Removing file `{self.filename}`")
         os.remove(self.filename)
 
     @property
