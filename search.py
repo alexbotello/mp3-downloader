@@ -18,7 +18,7 @@ def download_from_file(filename):
             try:
                 dl.download()
                 break
-            except KeyError:
+            except ConvertError:
                 dl.remove()
                 time.sleep(1.1)
                 continue
