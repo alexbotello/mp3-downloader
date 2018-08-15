@@ -1,8 +1,8 @@
 import sys
 import time
 
-from youtube import YouTube
-from downloader import Downloader
+from client import GoogleAPI
+from downloader import Downloader, ConvertError
 
 
 def download_from_file(filename):
@@ -11,7 +11,7 @@ def download_from_file(filename):
         songs = (line.rstrip() for line in file.readlines())
 
     for song in songs:
-        results = YouTube(song).search()
+        results = GoogleAPI().search(song)
         for result in results:
             link = f"{url}{result}"
             dl = Downloader(link)
@@ -28,15 +28,16 @@ if __name__ == "__main__":
     args = sys.argv[1:]
     query = " ".join(args)
     url = "https://www.youtube.com/watch?v="
-    results = YouTube(query).search()
+    results = GoogleAPI().search(query)
 
     for result in results:
         link = f"{url}{result}"
         dl = Downloader(link)
         try:
             dl.download()
+            time.sleep(1)
             break
-        except KeyError:
+        except ConvertError:
             dl.remove()
             time.sleep(1.5)
             continue
