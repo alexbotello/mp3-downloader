@@ -11,38 +11,46 @@ class Downloader:
         self.yt.register_on_complete_callback(self.convert_to_mp3)
         self.stream = self.yt.streams.first()
         self.logger = self.configure_logging()
+        self._file = None
 
     def configure_logging(self):
         logger = logging.getLogger(__name__)
-        handler = logging.StreamHandler()
-        logger.addHandler(handler)
-        logger.setLevel(logging.INFO)
+        if not logger.handlers:
+            handler = logging.StreamHandler()
+            logger.addHandler(handler)
+            logger.setLevel(logging.INFO)
         return logger
 
     def download(self):
-        self.logger.info(f"Downloading {self.filename}")
+        self.logger.info(f"Downloading {self.default_name}")
         self.stream.download()
 
     def convert_to_mp3(self, stream, file_handle):
-        self.export(self.filename)
+        self.export(self.default_name)
         self.remove()
-        self.logger.info(f"Successfully converted {self.yt.title}\n")
 
     def export(self, file_handle):
-        file = self.filename.split('.')[0] + ".mp3"
+        self._file = self.default_name.split('.')[0] + ".mp3"
         try:
             audio = AudioSegment.from_file(file_handle)
-            audio.export(file, format="mp3", bitrate="128k")
+            audio.export(self._file, format="mp3", bitrate="128k")
+            self.logger.info(f"Successfully converted {self.yt.title}")
         except KeyError:
             raise ConvertError
 
     def remove(self):
-        self.logger.info(f"Removing file `{self.filename}`")
-        os.remove(self.filename)
+        self.logger.info(f"Removing file `{self.default_name}`\n")
+        os.remove(self.default_name)
 
     @property
-    def filename(self):
+    def default_name(self):
         return self.stream.default_filename
+
+    @property
+    def file(self):
+        if self._file:
+            return self._file
+        return None
 
 
 class ConvertError(Exception):
