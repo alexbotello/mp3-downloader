@@ -20,8 +20,8 @@ def download_from_file(filename):
                 break
             except ConvertError:
                 dl.remove()
-                time.sleep(1.1)
                 continue
+        time.sleep(1.5)
 
 
 if __name__ == "__main__":
@@ -35,10 +35,9 @@ if __name__ == "__main__":
         dl = Downloader(link)
         try:
             dl.download()
-            time.sleep(1)
             break
         except ConvertError:
             dl.remove()
-            time.sleep(1.5)
             continue
+
 
