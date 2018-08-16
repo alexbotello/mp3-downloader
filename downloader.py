@@ -47,6 +47,10 @@ class Downloader:
         return self.stream.default_filename
 
     @property
+    def title(self):
+        return self.yt.title
+
+    @property
     def file(self):
         if self._file:
             return self._file
