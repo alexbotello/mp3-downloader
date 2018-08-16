@@ -14,30 +14,27 @@ def download_from_file(filename):
         results = GoogleAPI().search(song)
         for result in results:
             link = f"{url}{result}"
-            dl = Downloader(link)
+            audio = Downloader(link)
             try:
-                dl.download()
+                audio.download()
                 break
             except ConvertError:
-                dl.remove()
+                audio.remove()
                 continue
         time.sleep(1.5)
 
 
-if __name__ == "__main__":
-    args = sys.argv[1:]
-    query = " ".join(args)
+def download_by_query(query):
     url = "https://www.youtube.com/watch?v="
     results = GoogleAPI().search(query)
 
     for result in results:
-        link = f"{url}{result}"
-        dl = Downloader(link)
+        link = url + result
+        audio = Downloader(link)
         try:
-            dl.download()
+            audio.download()
             break
         except ConvertError:
-            dl.remove()
+            audio.remove()
             continue
-
-
+    return audio
