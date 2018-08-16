@@ -1,36 +1,51 @@
-import time
 import os
-from flask import Flask, send_file, jsonify
+import time
+import json
+import functools
 
-from client import GoogleAPI
+from flask import Flask, send_file, jsonify, request
+from flask_cors import CORS
+
 from downloader import Downloader, ConvertError
-
+from utils import download_by_query
 
 app = Flask(__name__)
+CORS(app)
+
+def authenticate():
+    message = {'error': "Authentication is required."}
+    resp = jsonify(message)
+
+    resp.status_code = 401
+    resp.headers['WWW-Authenticate'] = 'Basic realm="Main"'
+    return resp
+
+def requires_authorization(f):
+    @functools.wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.headers.get('Authorization')
+        token = os.environ['AUTH_TOKEN']
+        if not auth or auth != token:
+            return authenticate()
+        return f(*args, **kwargs)
+    return decorated
 
 @app.route('/', methods=['GET'])
 def home():
     return jsonify({'msg': "api is running"})
 
-
-@app.route('/download/<query>', methods=['GET'])
-def download(query):
-    base = "https://www.youtube.com/watch?v="
-    results = GoogleAPI().search(query)
-
-    for result in results:
-        url = base + result
-        dl = Downloader(url)
-        try:
-            dl.download()
-            break
-        except ConvertError:
-            dl.remove()
-            continue
-
-    response = send_file(dl.file)
-    os.remove(dl.file)
-    response.headers['my-custom-header'] = 'my-custom-status-0'
+@app.route('/download', methods=['POST'])
+@requires_authorization
+def download():
+    url = json.loads(request.data)['url']
+    audio = Downloader(url)
+    try:
+        audio.download()
+        response = send_file(audio.file)
+    except ConvertError:
+        audio = download_by_query(audio.title)
+        response = send_file(audio.file)
+    os.remove(audio.file)
     return response
 
 
