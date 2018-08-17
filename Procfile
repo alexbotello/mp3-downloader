@@ -1,1 +1,1 @@
-gunicorn --pythonpath server server:app --max-requests 1200
+gunicorn server:app --max-requests 1200
