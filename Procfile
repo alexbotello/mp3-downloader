@@ -1,1 +1,1 @@
-web: gunicorn server:app --max-requests 1200
+web: gunicorn server:app
