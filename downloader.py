@@ -59,6 +59,6 @@ class Downloader:
 
 class ConvertError(Exception):
     """
-    Throws when file fails to convert to mp3
+    Throws when file fails to convert
     """
     pass
