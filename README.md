@@ -9,3 +9,11 @@ Create an `.env` file and add your key inside
 ```
 KEY=dsf90sdf90sdf90sdf90sdf
 ```
+
+## Usage
+```
+from utils import download_by_query
+
+q = "mastodon march of the fire ants"
+download_by_query(q)
+```
