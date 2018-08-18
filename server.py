@@ -34,19 +34,30 @@ def requires_authorization(f):
 def home():
     return jsonify({'msg': "api is running"})
 
-@app.route('/download', methods=['POST'])
+@app.route('/download', methods=['GET'])
 @requires_authorization
 def download():
-    url = json.loads(request.data)['url']
+    url = request.args.get('url')
     audio = Downloader(url)
     try:
         audio.download()
-        response = send_file(audio.file)
+        return send_file(
+            audio.file,
+            mimetype="audio/mpeg",
+            as_attachment=True,
+            attachment_filename=audio.file
+        )
     except ConvertError:
         audio = download_by_query(audio.title)
-        response = send_file(audio.file)
-    os.remove(audio.file)
-    return response
+        return send_file(
+            audio.file,
+            mimetype="audio/mpeg",
+            as_attachment=True,
+            attachment_filename=audio.file
+        )
+    finally:
+        os.remove(audio.file)
+
 
 
 if __name__ == "__main__":
