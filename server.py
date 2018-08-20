@@ -41,7 +41,7 @@ def download():
     audio = Downloader(url)
     try:
         audio.download()
-        return send_file(
+        response = send_file(
             audio.file,
             mimetype="audio/mpeg",
             as_attachment=True,
@@ -49,14 +49,16 @@ def download():
         )
     except ConvertError:
         audio = download_by_query(audio.title)
-        return send_file(
+        respone = send_file(
             audio.file,
             mimetype="audio/mpeg",
             as_attachment=True,
             attachment_filename=audio.file
         )
     finally:
+        response.headers['Content-Type'] = 'audio/mpeg'
         os.remove(audio.file)
+        return response
 
 
 
