@@ -32,9 +32,8 @@ def stream_mp3():
     return Response(
         generate(),
         mimetype="audio/mpeg",
-        headers={"Content-disposition": f"attachment; filename={file}",
-                 "Content-type": "application/octet-stream",
-                 "File Name": f"{file}"})
+        content_type="application/octet-stream",
+        headers={"Content-disposition": f"attachment; filename={file}"})
 
 
 def download_from_youtube(url):
