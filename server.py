@@ -33,7 +33,8 @@ def stream_mp3():
         generate(),
         mimetype="audio/mpeg",
         content_type="application/octet-stream",
-        headers={"Content-disposition": f"attachment; filename={file}"})
+        headers={"Access-Control-Expose-Headers": "Content-Disposition",
+                 "Content-disposition": f"attachment; filename={file}"})
 
 
 def download_from_youtube(url):
