@@ -17,25 +17,49 @@ def home():
     return jsonify({'msg': "api is running"})
 
 @app.route('/download', methods=['GET'])
-def stream_mp3():
+def download():
     url = request.args.get('url')
     audio = download_from_youtube(url)
+    return jsonify({'file': audio.file})
 
+@app.route('/convert', methods=['GET'])
+def convert():
+    file = request.args.get('file')
     def generate():
-        with open(audio.file, "rb") as mp3:
+        with open(file, 'rb') as mp3:
             yield '<br/>'
             data = mp3.read(1024)
             while data:
                 yield data
                 data = mp3.read(1024)
-        delete_audio_file(audio)
-
+        delete_audio_file(file)
     return Response(
         generate(),
         mimetype="audio/mpeg",
         content_type="application/octet-stream",
         headers={"Access-Control-Expose-Headers": "Content-Disposition",
-                 "Content-disposition": f"attachment; filename={audio.file}"})
+                 "Content-disposition": f"attachment; filename={file}"})
+
+# @app.route('/download', methods=['GET'])
+# def stream_mp3():
+#     url = request.args.get('url')
+#     audio = download_from_youtube(url)
+
+#     def generate():
+#         with open(audio.file, "rb") as mp3:
+#             yield '<br/>'
+#             data = mp3.read(1024)
+#             while data:
+#                 yield data
+#                 data = mp3.read(1024)
+#         delete_audio_file(audio)
+
+#     return Response(
+#         generate(),
+#         mimetype="audio/mpeg",
+#         content_type="application/octet-stream",
+#         headers={"Access-Control-Expose-Headers": "Content-Disposition",
+#                  "Content-disposition": f"attachment; filename={audio.file}"})
 
 
 def download_from_youtube(url):
@@ -47,10 +71,10 @@ def download_from_youtube(url):
     return audio
 
 
-def delete_audio_file(audio):
+def delete_audio_file(file):
     try:
-        os.remove(audio.file)
-        audio.remove()
+        os.remove(file)
+        # audio.remove()
     except FileNotFoundError:
         print('ERRORING INSIDE GENERATE')
         return
