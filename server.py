@@ -23,6 +23,7 @@ def stream_mp3():
 
     def generate():
         with open(audio.file, "rb") as mp3:
+            yield '<br/>'
             data = mp3.read(1024)
             while data:
                 yield data
