@@ -35,7 +35,7 @@ def convert():
     file = audio.export()
     def generate():
         with open(file, 'rb') as mp3:
-            # yield '<br/>'
+            yield '<br/>'
             data = mp3.read(1024)
             while data:
                 yield data
