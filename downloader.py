@@ -36,7 +36,7 @@ class Downloader:
         try:
             audio = AudioSegment.from_file(file_handle)
             audio.export(self._file, format="mp3", bitrate="128k")
-            # self.logger.info(f"Successfully converted {self.yt.title}")
+            self.logger.info(f"Successfully converted {file_handle}")
             self.remove(file_handle)
             return self.file
         except KeyError:
