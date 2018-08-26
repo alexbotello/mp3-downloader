@@ -6,8 +6,9 @@ import functools
 from flask import Flask, Response, jsonify, request
 from flask_cors import CORS
 
-from downloader import Downloader, ConvertError
-from utils import download_by_query
+from downloader import Downloader
+from converter import Converter
+# from utils import download_by_query
 
 app = Flask(__name__)
 CORS(app)
@@ -23,18 +24,18 @@ def download():
     audio.download()
     while True:
         if audio.complete:
-            return jsonify({'file': audio.default_name})
+            return jsonify({'file': audio.filename})
         else:
             continue
 
 @app.route('/convert', methods=['GET'])
 def convert():
     file = request.args.get('file')
-    audio = Downloader()
-    file = audio.export(file)
+    audio = Converter(file)
+    file = audio.export()
     def generate():
         with open(file, 'rb') as mp3:
-            yield '<br/>'
+            # yield '<br/>'
             data = mp3.read(1024)
             while data:
                 yield data
@@ -47,43 +48,12 @@ def convert():
         headers={"Access-Control-Expose-Headers": "Content-Disposition",
                  "Content-disposition": f"attachment; filename={file}"})
 
-# @app.route('/download', methods=['GET'])
-# def stream_mp3():
-#     url = request.args.get('url')
-#     audio = download_from_youtube(url)
-
-#     def generate():
-#         with open(audio.file, "rb") as mp3:
-#             yield '<br/>'
-#             data = mp3.read(1024)
-#             while data:
-#                 yield data
-#                 data = mp3.read(1024)
-#         delete_audio_file(audio)
-
-#     return Response(
-#         generate(),
-#         mimetype="audio/mpeg",
-#         content_type="application/octet-stream",
-#         headers={"Access-Control-Expose-Headers": "Content-Disposition",
-#                  "Content-disposition": f"attachment; filename={audio.file}"})
-
-
-def download_from_youtube(url):
-    audio = Downloader(url)
-    try:
-        audio.download()
-    except ConvertError:
-        audio = download_by_query(audio.title)
-    return audio
-
 
 def delete_audio_file(file):
     try:
         os.remove(file)
-        # audio.remove()
     except FileNotFoundError:
-        print('ERRORING INSIDE GENERATE')
+        print('Audio file does not exist')
         return
 
 
