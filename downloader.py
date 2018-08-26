@@ -31,8 +31,8 @@ class Downloader:
     #     self.export(self.default_name)
     #     self.remove()
     def is_complete(self, stream, file_handle):
-        self.logger.info('Download is complete')
         self.complete = True
+        self.logger.info('Download is complete')
 
     def export(self, file_handle):
         # self._file = self.default_name.split('.')[0] + ".mp3"
