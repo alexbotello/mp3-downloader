@@ -21,6 +21,8 @@ def download():
     url = request.args.get('url')
     audio = Downloader(url)
     audio.download()
+    while not audio.complete:
+        continue
     return jsonify({'file': audio.default_name})
 
 @app.route('/convert', methods=['GET'])

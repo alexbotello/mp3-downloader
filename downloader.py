@@ -9,10 +9,11 @@ class Downloader:
     def __init__(self, url=None):
         if url:
             self.yt = YouTube(url)
-            # self.yt.register_on_complete_callback(self.convert_to_mp3)
+            self.yt.register_on_complete_callback(self.is_complete)
             self.stream = self.yt.streams.first()
             self._file = None
         self.logger = self.configure_logging()
+        self.complete = False
 
     def configure_logging(self):
         logger = logging.getLogger(__name__)
@@ -26,9 +27,12 @@ class Downloader:
         self.logger.info(f"Downloading {self.default_name}")
         self.stream.download()
 
-    def convert_to_mp3(self, stream, file_handle):
-        self.export(self.default_name)
-        self.remove()
+    # def convert_to_mp3(self, stream, file_handle):
+    #     self.export(self.default_name)
+    #     self.remove()
+    def is_complete(self, stream, file_handle):
+        self.logger.info('Download is complete')
+        self.complete = True
 
     def export(self, file_handle):
         # self._file = self.default_name.split('.')[0] + ".mp3"
@@ -38,7 +42,7 @@ class Downloader:
             audio.export(self._file, format="mp3", bitrate="128k")
             self.logger.info(f"Successfully converted {file_handle}")
             self.remove(file_handle)
-            return self.file
+            return self._file
         except KeyError:
             raise ConvertError
 
