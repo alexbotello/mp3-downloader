@@ -27,7 +27,6 @@ class Downloader:
 
     def convert_to_mp3(self, stream, file_handle):
         self.export(self.default_name)
-        self.remove()
 
     def export(self, file_handle):
         self._file = self.default_name.split('.')[0] + ".mp3"

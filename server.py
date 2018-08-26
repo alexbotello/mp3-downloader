@@ -19,22 +19,22 @@ def home():
 @app.route('/download', methods=['GET'])
 def stream_mp3():
     url = request.args.get('url')
-    file = download_from_youtube(url)
+    audio = download_from_youtube(url)
 
     def generate():
-        with open(file, "rb") as mp3:
+        with open(audio.file, "rb") as mp3:
             data = mp3.read(1024)
             while data:
                 yield data
                 data = mp3.read(1024)
-        delete_audio_file(file)
+        delete_audio_file(audio)
 
     return Response(
         generate(),
         mimetype="audio/mpeg",
         content_type="application/octet-stream",
         headers={"Access-Control-Expose-Headers": "Content-Disposition",
-                 "Content-disposition": f"attachment; filename={file}"})
+                 "Content-disposition": f"attachment; filename={audio.file}"})
 
 
 def download_from_youtube(url):
@@ -43,12 +43,13 @@ def download_from_youtube(url):
         audio.download()
     except ConvertError:
         audio = download_by_query(audio.title)
-    return audio.file
+    return audio
 
 
-def delete_audio_file(file):
+def delete_audio_file(audio):
     try:
-        os.remove(file)
+        os.remove(audio.file)
+        audio.remove()
     except FileNotFoundError:
         print('ERRORING INSIDE GENERATE')
         return
