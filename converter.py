@@ -20,13 +20,14 @@ class Converter():
 
     def export(self):
         try:
-            audio = AudioSegment.from_file(self.handle, codex="opus")
+            audio = AudioSegment.from_file(self.handle)
             audio.export(self.file, format="mp3", bitrate="128k")
             self.logger.info(f"Successfully converted {self.handle}")
             self.remove()
             return self.file
         except KeyError:
-            raise ConvertError
+            self.logger.info('error error')
+
 
     def remove(self):
         os.remove(self.handle)
