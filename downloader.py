@@ -6,12 +6,13 @@ from pydub import AudioSegment
 
 
 class Downloader:
-    def __init__(self, url):
-        self.yt = YouTube(url)
-        self.yt.register_on_complete_callback(self.convert_to_mp3)
-        self.stream = self.yt.streams.first()
+    def __init__(self, url=None):
+        if url:
+            self.yt = YouTube(url)
+            # self.yt.register_on_complete_callback(self.convert_to_mp3)
+            self.stream = self.yt.streams.first()
+            self._file = None
         self.logger = self.configure_logging()
-        self._file = None
 
     def configure_logging(self):
         logger = logging.getLogger(__name__)
@@ -30,20 +31,27 @@ class Downloader:
         self.remove()
 
     def export(self, file_handle):
-        self._file = self.default_name.split('.')[0] + ".mp3"
+        # self._file = self.default_name.split('.')[0] + ".mp3"
+        self._file = file_handle.split('.')[0] + ".mp3"
         try:
             audio = AudioSegment.from_file(file_handle)
             audio.export(self._file, format="mp3", bitrate="128k")
-            self.logger.info(f"Successfully converted {self.yt.title}")
+            # self.logger.info(f"Successfully converted {self.yt.title}")
+            self.remove(file_handle)
+            return self.file
         except KeyError:
             raise ConvertError
 
-    def remove(self):
-        self.logger.info(f"Removing file `{self.default_name}`\n")
-        os.remove(self.default_name)
+    def remove(self, file=None):
+        # if self.default_name:
+        #     file = self.default_name
+        self.logger.info(f"Removing file `{file}`\n")
+        os.remove(file)
 
     @property
     def default_name(self):
+        if self.stream is None:
+            return None
         return self.stream.default_filename
 
     @property

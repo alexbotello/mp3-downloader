@@ -19,12 +19,15 @@ def home():
 @app.route('/download', methods=['GET'])
 def download():
     url = request.args.get('url')
-    audio = download_from_youtube(url)
-    return jsonify({'file': audio.file})
+    audio = Downloader(url)
+    audio.download()
+    return jsonify({'file': audio.default_name})
 
 @app.route('/convert', methods=['GET'])
 def convert():
     file = request.args.get('file')
+    audio = Downloader()
+    file = audio.export(file)
     def generate():
         with open(file, 'rb') as mp3:
             yield '<br/>'
