@@ -1,6 +1,4 @@
 import os
-import time
-import json
 import functools
 
 from flask import Flask, Response, jsonify, request
@@ -8,7 +6,6 @@ from flask_cors import CORS
 
 from downloader import Downloader
 from converter import Converter
-# from utils import download_by_query
 
 app = Flask(__name__)
 CORS(app)
@@ -43,8 +40,7 @@ def download():
     while True:
         if audio.complete:
             return jsonify({'file': audio.filename})
-        else:
-            continue
+        continue
 
 @app.route('/convert/<file>', methods=['GET'])
 @requires_authorization
@@ -65,7 +61,6 @@ def convert(file):
         content_type="application/octet-stream",
         headers={"Access-Control-Expose-Headers": "Content-Disposition",
                  "Content-disposition": f"attachment; filename={file}"})
-
 
 def delete_audio_file(file):
     try:
