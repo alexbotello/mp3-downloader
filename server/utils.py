@@ -15,7 +15,7 @@ def download_from_file(filename):
         results = GoogleAPI().search(song)
         for index, result in enumerate(results):
             if index == 0:
-                link = url + next(results)
+                link = url + result
                 audio = Downloader(link)
                 audio.download()
                 converter = Converter(audio.filename)
