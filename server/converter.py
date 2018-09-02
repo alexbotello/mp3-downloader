@@ -21,7 +21,7 @@ class Converter():
     def export(self):
         try:
             audio = AudioSegment.from_file(self.handle)
-            audio.export(self.file, format="mp3", bitrate="128k")
+            audio.export(self.file, format="mp3")
             self.logger.info(f"Successfully converted {self.handle}")
             self.remove()
             return self.file

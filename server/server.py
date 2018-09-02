@@ -1,5 +1,4 @@
 import os
-import time
 import functools
 
 from flask import Flask, Response, jsonify, request
