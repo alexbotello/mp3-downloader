@@ -1,4 +1,5 @@
 import os
+import time
 import functools
 
 from flask import Flask, Response, jsonify, request
@@ -39,6 +40,7 @@ def download():
     audio.download()
     while True:
         if audio.complete:
+            time.sleep(2)
             return jsonify({'file': audio.filename})
         continue
 

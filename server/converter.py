@@ -28,7 +28,6 @@ class Converter():
         except KeyError:
             self.logger.info('error error')
 
-
     def remove(self):
         os.remove(self.handle)
         self.logger.info(f"Removed file {self.handle}")

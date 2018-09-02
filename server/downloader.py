@@ -10,7 +10,7 @@ class Downloader:
         self.yt.register_on_complete_callback(self.is_complete)
         self.stream = self.yt.streams.filter(subtype='mp4').first()
         self.logger = self.configure_logging()
-        self.complete = False
+        self._complete = False
 
     def configure_logging(self):
         logger = logging.getLogger(__name__)
@@ -25,8 +25,12 @@ class Downloader:
         self.stream.download()
 
     def is_complete(self, stream, file_handle):
-        self.complete = True
+        self._complete = True
         self.logger.info('Download is complete')
+
+    @property
+    def complete(self):
+        return self._complete
 
     @property
     def filename(self):
