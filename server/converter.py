@@ -1,4 +1,5 @@
 import os
+import time
 import logging
 
 from pydub import AudioSegment
@@ -21,7 +22,7 @@ class Converter():
     def export(self):
         try:
             audio = AudioSegment.from_file(self.handle)
-            audio.export(self.file, format="mp3")
+            audio.export(self.file, format="mp3", bitrate="68k")
             self.logger.info(f"Successfully converted {self.handle}")
             self.remove()
             return self.file

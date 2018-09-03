@@ -1,5 +1,4 @@
 import os
-import time
 import logging
 
 from pytube import YouTube
@@ -26,7 +25,6 @@ class Downloader:
         self.stream.download()
 
     def is_complete(self, stream, file_handle):
-        time.sleep(2)
         self._complete = True
         self.logger.info('Download is complete')
 
