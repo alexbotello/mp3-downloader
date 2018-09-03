@@ -9,7 +9,7 @@ class Downloader:
     def __init__(self, url):
         self.yt = YouTube(url)
         self.yt.register_on_complete_callback(self.is_complete)
-        self.stream = self.yt.streams.filter(subtype='mp4').first()
+        self.stream = self.yt.streams.filter(subtype="mp4").first()
         self.logger = self.configure_logging()
         self._complete = False
 
