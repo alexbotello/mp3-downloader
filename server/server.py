@@ -55,20 +55,6 @@ def convert(file):
     end = time.time()
     print(f"Conversion took {end-start} seconds")
     return jsonify({'file': file})
-    # def generate():
-    #     with open(file, 'rb') as mp3:
-    #         yield '<br/>'
-    #         data = mp3.read(1024)
-    #         while data:
-    #             yield data
-    #             data = mp3.read(1024)
-    #     delete_audio_file(file)
-    # return Response(
-    #     generate(),
-    #     mimetype="audio/mpeg",
-    #     content_type="application/octet-stream",
-    #     headers={"Access-Control-Expose-Headers": "Content-Disposition",
-    #              "Content-disposition": f"attachment; filename={file}"})
 
 @app.route('/retrieve/<file>', methods=['GET'])
 @requires_authorization
