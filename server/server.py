@@ -1,4 +1,5 @@
 import os
+import time
 import functools
 
 from flask import Flask, Response, jsonify, request
@@ -34,33 +35,63 @@ def home():
 @app.route('/download', methods=['GET'])
 @requires_authorization
 def download():
+    start = time.time()
     url = request.args.get('url')
     audio = Downloader(url)
     audio.download()
     while True:
         if audio.complete:
+            end = time.time()
+            print(f"Download took {end-start} seconds")
             return jsonify({'file': audio.filename})
         continue
 
 @app.route('/convert/<file>', methods=['GET'])
 @requires_authorization
 def convert(file):
+    start = time.time()
     audio = Converter(file)
     file = audio.export()
-    def generate():
-        with open(file, 'rb') as mp3:
-            yield '<br/>'
-            data = mp3.read(1024)
-            while data:
-                yield data
-                data = mp3.read(1024)
-        delete_audio_file(file)
+    end = time.time()
+    print(f"Conversion took {end-start} seconds")
+    return jsonify({'file': file})
+    # def generate():
+    #     with open(file, 'rb') as mp3:
+    #         yield '<br/>'
+    #         data = mp3.read(1024)
+    #         while data:
+    #             yield data
+    #             data = mp3.read(1024)
+    #     delete_audio_file(file)
+    # return Response(
+    #     generate(),
+    #     mimetype="audio/mpeg",
+    #     content_type="application/octet-stream",
+    #     headers={"Access-Control-Expose-Headers": "Content-Disposition",
+    #              "Content-disposition": f"attachment; filename={file}"})
+
+@app.route('/retrieve/<file>', methods=['GET'])
+@requires_authorization
+def send_file(file):
     return Response(
-        generate(),
+        generate(file),
         mimetype="audio/mpeg",
         content_type="application/octet-stream",
         headers={"Access-Control-Expose-Headers": "Content-Disposition",
-                 "Content-disposition": f"attachment; filename={file}"})
+                 "Content-disposition": f"attachment; filename={file}"}
+    )
+
+def generate(file):
+    start = time.time()
+    with open(file, 'rb') as mp3:
+        yield '<br/>'
+        data = mp3.read(1024)
+        while data:
+            yield data
+            data = mp3.read(1024)
+    delete_audio_file(file)
+    end = time.time()
+    print(f"Retrieval took {end-start} seconds")
 
 def delete_audio_file(file):
     try:
