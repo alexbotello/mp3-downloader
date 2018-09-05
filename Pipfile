@@ -13,6 +13,7 @@ google-auth-oauthlib = "*"
 flask = "*"
 flask-cors = "*"
 gunicorn = "*"
+youtube-dl = "*"
 
 [dev-packages]
 pylint = "*"

@@ -1,6 +1,7 @@
 import os
 import time
 import logging
+import subprocess
 
 from pydub import AudioSegment
 
@@ -22,7 +23,10 @@ class Converter():
     def export(self):
         try:
             audio = AudioSegment.from_file(self.handle)
-            audio.export(self.file, format="mp3", bitrate="68k")
+            # audio.export(self.file, format="mp3", bitrate="68k")
+            subprocess.call(
+                f'ffmpeg -i "{self.handle}" -b:a 192K -vn "{self.file}"', shell=True
+            )
             self.logger.info(f"Successfully converted {self.handle}")
             self.remove()
             return self.file
