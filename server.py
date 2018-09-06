@@ -3,23 +3,24 @@ import time
 import functools
 import subprocess
 
+import redis
 import youtube_dl
-from flask import Flask, Response, jsonify, request
+from celery import Celery
 from flask_cors import CORS
+from flask import Flask, Response, jsonify, request, url_for
 
-from downloader import Downloader
-from converter import Converter
 
 app = Flask(__name__)
+app.config['CELERY_BROKER_URL'] = os.environ['REDIS_URL'] #url
+app.config['CELERY_RESULT_BACKEND'] = os.environ['REDIS_URL'] #url
 CORS(app)
 
-options = {
-    "format":"bestaudio[ext=m4a]",
-    "extractaudio": True,
-    "quiet": True,
-    "ignoreerrors": False,
-    "outtmpl": "%(title)s.%(ext)s"
-}
+celery = Celery(
+    app.name,
+    broker=app.config['CELERY_BROKER_URL'],
+    backend=app.config['CELERY_RESULT_BACKEND']
+)
+celery.conf.update(app.config)
 
 def authenticate():
     message = {'error': "Authentication is required."}
@@ -42,39 +43,68 @@ def requires_authorization(f):
 def home():
     return jsonify({'msg': "api is running"})
 
-@app.route('/download', methods=['GET'])
+@app.route('/download', methods=['POST'])
 @requires_authorization
 def download():
-    url = request.args.get('url')
-    # audio = Downloader(url)
-    # audio.download()
-    # while True:
-    #     if audio.complete:
-    #         return jsonify({'file': audio.filename})
-    #     continue
+    url = request.get_json()['url']
+    task = download_youtube_audio.apply_async(args=[url])
+    return jsonify({'Location': url_for('download_status', task_id=task.id)}), 202
+
+@celery.task
+def download_youtube_audio(url):
+    options = {
+    "format":"bestaudio[ext=m4a]",
+    "extractaudio": True,
+    "quiet": True,
+    "ignoreerrors": False,
+    "outtmpl": "%(title)s.%(ext)s"
+    }
     with youtube_dl.YoutubeDL(options) as ytdl:
         start = time.time()
         result = ytdl.extract_info(url, download=True)
         file = result['title'] + ".m4a"
         end = time.time()
         print(f"Download took {end-start} seconds")
-        return jsonify({"file": file})
+    return {'file': file, 'status': 'Task completed!'}
+
+@app.route('/download/status/<task_id>', methods=['GET'])
+@requires_authorization
+def download_status(task_id):
+    task = download_youtube_audio.AsyncResult(task_id)
+    data = task.get()
+    response = {'state': task.state}
+    response.update(data)
+    return jsonify(response)
 
 @app.route('/convert/<file>', methods=['GET'])
 @requires_authorization
 def convert(file):
+    task = m4a_to_mp3.apply_async(args=[file])
+    return jsonify({
+        'Location': url_for('conversion_status', task_id=task.id)
+    }), 202
+
+@celery.task()
+def m4a_to_mp3(file):
     outfile = file.split('.')[0] + '.mp3'
     start = time.time()
-    # audio = Converter(file)
-    # file = audio.export()
     subprocess.call(
-        f"ffmpeg -i '{file}' -acodec libmp3lame -ab 128k -aq 20 -loglevel quiet '{outfile}'",
+        f"ffmpeg -i '{file}' -acodec libmp3lame -ab 128k -aq 2 -loglevel quiet '{outfile}'",
         shell=True
     )
     delete_audio_file(file)
     end = time.time()
     print(f'Conversion took {end-start} seconds')
-    return jsonify({'file': outfile})
+    return {'file': outfile, 'status': 'Task completed!'}
+
+@app.route('/convert/status/<task_id>')
+@requires_authorization
+def conversion_status(task_id):
+    task = m4a_to_mp3.AsyncResult(task_id)
+    data = task.get()
+    response = {'state': task.state}
+    response.update(data)
+    return jsonify(response)
 
 @app.route('/retrieve/<file>', methods=['GET'])
 @requires_authorization
@@ -102,7 +132,3 @@ def delete_audio_file(file):
     except FileNotFoundError:
         print('Audio file does not exist')
         return
-
-
-if __name__ == "__main__":
-    app.run()
