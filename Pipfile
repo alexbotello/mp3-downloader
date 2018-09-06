@@ -4,8 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pytube = "*"
-pydub = "*"
 google-api-python-client = "*"
 google-auth = "*"
 google-auth-oauthlib = "*"
@@ -14,6 +12,8 @@ flask = "*"
 flask-cors = "*"
 gunicorn = "*"
 youtube-dl = "*"
+redis = "*"
+celery = "*"
 
 [dev-packages]
 pylint = "*"
