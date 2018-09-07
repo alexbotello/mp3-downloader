@@ -126,12 +126,16 @@ def send_file(file):
     )
 
 def generate(file):
-    with open(file, 'rb') as mp3:
-        data = mp3.read(1024)
-        while data:
-            yield data
+    try:
+        with open(file, 'rb') as mp3:
             data = mp3.read(1024)
-    delete_audio_file(file)
+            while data:
+                yield data
+                data = mp3.read(1024)
+    except FileNotFoundError:
+        print('Error streaming audio file')
+    finally:
+        delete_audio_file(file)
 
 def delete_audio_file(file):
     try:
