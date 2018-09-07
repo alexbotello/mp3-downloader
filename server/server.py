@@ -61,8 +61,12 @@ def status(type, task_id):
     task = celery.AsyncResult(task_id)
     if task.ready():
         data = task.get()
-        response.update(data)
-    response['state'] = task.state
+        if data['status'] == 'FAILED':
+            response['status'] = data['status']
+        else:
+            response.update(data)
+    else:
+        response['status'] = task.state
     return jsonify(response)
 
 @app.route('/retrieve/<file>', methods=['GET'])
@@ -81,7 +85,8 @@ def stream(file):
     Streams mp3 data in chunks to the client
     """
     try:
-        with open(file, 'rb') as mp3:
+        file_path = f"../{file}"
+        with open(file_path, 'rb') as mp3:
             data = mp3.read(1024)
             while data:
                 yield data
@@ -89,4 +94,4 @@ def stream(file):
     except FileNotFoundError:
         print('Error streaming audio file')
     finally:
-        tasks.delete_file(file)
+        tasks.delete_file(file_path)

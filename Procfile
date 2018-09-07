@@ -1,2 +1,2 @@
-web: gunicorn server:app
-worker: celery -A tasks:celery worker --loglevel=DEBUG
+web: gunicorn --chdir server server:app
+worker: celery -A server.tasks:celery worker --loglevel=DEBUG
