@@ -11,8 +11,8 @@ from flask import Flask, Response, jsonify, request, url_for
 
 
 app = Flask(__name__)
-app.config['CELERY_BROKER_URL'] = os.environ['REDIS_URL'] #url
-app.config['CELERY_RESULT_BACKEND'] = os.environ['REDIS_URL'] #url
+app.config['CELERY_BROKER_URL'] = os.environ['REDIS_URL']
+app.config['CELERY_RESULT_BACKEND'] = os.environ['REDIS_URL']
 CORS(app)
 
 celery = Celery(
@@ -47,8 +47,10 @@ def home():
 @requires_authorization
 def download():
     url = request.get_json()['url']
-    task = download_youtube_audio.apply_async(args=[url])
-    return jsonify({'Location': url_for('download_status', task_id=task.id)}), 202
+    task = download_youtube_audio.delay(url)
+    return jsonify({
+        'Location': url_for('download_status', task_id=task.id)
+    }), 202
 
 @celery.task
 def download_youtube_audio(url):
@@ -59,51 +61,57 @@ def download_youtube_audio(url):
     "ignoreerrors": False,
     "outtmpl": "%(title)s.%(ext)s"
     }
-    with youtube_dl.YoutubeDL(options) as ytdl:
-        start = time.time()
-        result = ytdl.extract_info(url, download=True)
-        file = result['title'] + ".m4a"
-        end = time.time()
-        print(f"Download took {end-start} seconds")
-    return {'file': file, 'status': 'Task completed!'}
+    try:
+        with youtube_dl.YoutubeDL(options) as ytdl:
+            result = ytdl.extract_info(url, download=True)
+            file = result['title'] + ".m4a"
+        return {'file': file, 'status': 'Task completed!'}
+    except Exception as e:
+        print(e)
+        delete_audio_file(file)
 
 @app.route('/download/status/<task_id>', methods=['GET'])
 @requires_authorization
 def download_status(task_id):
+    response = {}
     task = download_youtube_audio.AsyncResult(task_id)
-    data = task.get()
-    response = {'state': task.state}
-    response.update(data)
+    if task.ready():
+        data = task.get()
+        response.update(data)
+    response['state'] = task.state
     return jsonify(response)
 
 @app.route('/convert/<file>', methods=['GET'])
 @requires_authorization
 def convert(file):
-    task = m4a_to_mp3.apply_async(args=[file])
+    task = m4a_to_mp3.delay(file)
     return jsonify({
         'Location': url_for('conversion_status', task_id=task.id)
     }), 202
 
 @celery.task()
 def m4a_to_mp3(file):
-    outfile = file.split('.')[0] + '.mp3'
-    start = time.time()
-    subprocess.call(
-        f"ffmpeg -i '{file}' -acodec libmp3lame -ab 128k -aq 2 -loglevel quiet '{outfile}'",
-        shell=True
-    )
-    delete_audio_file(file)
-    end = time.time()
-    print(f'Conversion took {end-start} seconds')
-    return {'file': outfile, 'status': 'Task completed!'}
+    try:
+        outfile = file.split('.')[0] + '.mp3'
+        subprocess.call(
+            f"ffmpeg -i '{file}' -acodec libmp3lame -ab 128k -aq 2 -loglevel quiet '{outfile}'",
+            shell=True
+        )
+        return {'file': outfile, 'status': 'Task completed!'}
+    except Exception as e:
+        print(e)
+    finally:
+        delete_audio_file(file)
 
 @app.route('/convert/status/<task_id>')
 @requires_authorization
 def conversion_status(task_id):
+    response = {}
     task = m4a_to_mp3.AsyncResult(task_id)
-    # data = task.get()
-    response = {'state': task.state}
-    # response.update(data)
+    if task.ready():
+        data = task.get()
+        response.update(data)
+    response['state'] = task.state
     return jsonify(response)
 
 @app.route('/retrieve/<file>', methods=['GET'])
@@ -119,7 +127,6 @@ def send_file(file):
 
 def generate(file):
     with open(file, 'rb') as mp3:
-        yield '<br/>'
         data = mp3.read(1024)
         while data:
             yield data

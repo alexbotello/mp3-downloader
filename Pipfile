@@ -13,7 +13,7 @@ flask-cors = "*"
 gunicorn = "*"
 youtube-dl = "*"
 redis = "*"
-celery = "*"
+celery = {ref = "master", git = "https://github.com/celery/celery.git"}
 
 [dev-packages]
 pylint = "*"
