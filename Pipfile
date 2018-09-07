@@ -11,9 +11,10 @@ google-auth-oauthlib = "*"
 flask = "*"
 flask-cors = "*"
 gunicorn = "*"
-youtube-dl = "*"
 redis = "*"
 celery = {ref = "master", git = "https://github.com/celery/celery.git"}
+pydub = "*"
+youtube-dl = "*"
 
 [dev-packages]
 pylint = "*"

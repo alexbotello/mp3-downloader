@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "b18124c713ca5d90073549fa433a92281bc11c9382a224196ae99c30ecab0b28"
+            "sha256": "d92ed5ed8a9cb5ac73d6fe9cb52b1a25272e9b5c5a0db347ac340240f6e33707"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -157,6 +157,14 @@
             ],
             "version": "==0.2.2"
         },
+        "pydub": {
+            "hashes": [
+                "sha256:20beff39e9959a3b2cb4392802aecb9b2417837fff635d2b00b5ef5f5326d313",
+                "sha256:b17c5b01a94bb6c50e3e4ff1953d61919b156e774182038d92389215976bd6a1"
+            ],
+            "index": "pypi",
+            "version": "==0.22.1"
+        },
         "redis": {
             "hashes": [
                 "sha256:8a1900a9f2a0a44ecf6e8b5eb3e967a9909dfed219ad66df094f27f7d6f330fb",
@@ -220,11 +228,11 @@
         },
         "youtube-dl": {
             "hashes": [
-                "sha256:eed678353137491fa15ac2bc99ae2bff5cea7af1ce00798aef94c4a5a1b6f06c",
-                "sha256:f161e77d3cbcb5e8ec2a414c137ce97df2f1f38117b22090dfdf858af6a1fe85"
+                "sha256:42c2e82280c943ce618969c3ceeea56666554f311e86a8082c72ec91a63885a9",
+                "sha256:fc7d1c9e69c44cdf3b11b056d382502e1851bdcd900ff0ced61b6c65d2e4098c"
             ],
             "index": "pypi",
-            "version": "==2018.9.1"
+            "version": "==2018.9.8"
         }
     },
     "develop": {
