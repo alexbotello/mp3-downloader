@@ -101,9 +101,9 @@ def m4a_to_mp3(file):
 @requires_authorization
 def conversion_status(task_id):
     task = m4a_to_mp3.AsyncResult(task_id)
-    data = task.get()
+    # data = task.get()
     response = {'state': task.state}
-    response.update(data)
+    # response.update(data)
     return jsonify(response)
 
 @app.route('/retrieve/<file>', methods=['GET'])
