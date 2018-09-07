@@ -7,8 +7,8 @@ from celery import Celery
 
 celery = Celery(
     "tasks",
-    broker=os.environ['CELERY_URL'],
-    backend=os.environ['CELERY_URL']
+    broker=os.environ['REDIS_URL'],
+    backend=os.environ['REDIS_URL']
 )
 
 @celery.task
