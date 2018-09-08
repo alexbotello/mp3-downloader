@@ -4,7 +4,10 @@ import functools
 from flask_cors import CORS
 from flask import Flask, Response, jsonify, request, url_for
 
-import tasks
+try:
+    import tasks
+except ModuleNotFoundError:
+    import server.tasks as tasks
 
 app = Flask(__name__)
 CORS(app)
