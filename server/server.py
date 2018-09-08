@@ -95,6 +95,8 @@ def stream(file):
                 yield data
                 data = mp3.read(1024)
     except FileNotFoundError:
-        print('Error streaming audio file')
+        error = 'Error streaming audio file'
+        print(error)
+        return error
     finally:
         tasks.delete_file(file_path)

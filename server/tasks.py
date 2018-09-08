@@ -52,5 +52,6 @@ def delete_file(file):
     try:
         os.remove(file)
     except FileNotFoundError:
-        # print('Audio file does not exist')
-        return 'Audio file does not exist'
+        error = 'Audio file does not exist'
+        print(error)
+        return error
