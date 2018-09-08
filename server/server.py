@@ -87,8 +87,9 @@ def stream(file):
     """
     Streams mp3 data in chunks to the client
     """
+    path = os.path.dirname(__file__).split('server')[0]
+    file_path = f"{path}{file}"
     try:
-        file_path = f"../{file}"
         with open(file_path, 'rb') as mp3:
             data = mp3.read(1024)
             while data:
