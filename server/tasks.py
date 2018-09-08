@@ -31,9 +31,6 @@ def extract_audio(url):
         return {'file': file, 'status': 'SUCCESS'}
     except youtube_dl.utils.DownloadError:
         return {'status': 'FAILED'}
-    except Exception as e:
-        print(e)
-        delete_file(file)
 
 @celery.task(name="server.tasks.m4a_to_mp3")
 def m4a_to_mp3(file):
@@ -42,10 +39,6 @@ def m4a_to_mp3(file):
     """
     try:
         outfile = file.split('.')[0] + '.mp3'
-        # subprocess.call(
-        #     f"ffmpeg -i '{file}' -acodec libmp3lame -ab 128k -aq 2 -loglevel quiet '{outfile}'",
-        #     shell=True
-        # )
         sound = AudioSegment.from_file(file)
         sound.export(outfile, format="mp3")
         return {'file': outfile, 'status': 'SUCCESS'}
@@ -59,5 +52,5 @@ def delete_file(file):
     try:
         os.remove(file)
     except FileNotFoundError:
-        print('Audio file does not exist')
-        return
+        # print('Audio file does not exist')
+        return 'Audio file does not exist'
