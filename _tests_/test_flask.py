@@ -2,9 +2,11 @@ import os
 import pytest
 
 from server.server import app, stream
+from server.tasks import extract_audio
 
 headers = {'Authorization': os.environ['AUTH_TOKEN']}
 file = 'Mastodon - Trilobite'
+url = 'https://www.youtube.com/watch?v=3YAwu5jKV5M'
 
 @pytest.fixture
 def client():
@@ -52,5 +54,13 @@ def test_retrieve_route(client):
     assert test.mimetype == "application/octet-stream"
     assert test.is_json == False
 
-def test_stream_function(client):
-    pass
+def test_stream_function():
+    global file
+    for data in stream(file):
+        assert data == 'Error streaming audio file'
+
+    audio = extract_audio(url)
+    file = audio['file']
+    [data for data in stream(file)] # should run without error and delete file when finished
+    with pytest.raises(FileNotFoundError):
+        os.remove(file)
