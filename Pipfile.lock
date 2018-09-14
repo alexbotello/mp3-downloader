@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "f6b557ed5bad91889193cdb311b273ec5154852d24453cc703f225dba6413cb2"
+            "sha256": "84b1bc74f651b4f63970e411d5d08bb2527cfd2caafada8663d925e4792ea18f"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,9 +16,24 @@
         ]
     },
     "default": {
+        "boto3": {
+            "hashes": [
+                "sha256:2152e0da8098665e6a03bbbde1de1b4fafdef7151010d1f0e53693a3f2a1deb0",
+                "sha256:323660fd1aa9c95fe90003f44c5fc37cbb891a8b506fa346967d14edcbcb90a4"
+            ],
+            "index": "pypi",
+            "version": "==1.9.4"
+        },
+        "botocore": {
+            "hashes": [
+                "sha256:3b2cab368572ee987a6236321ddea491e4253c819009c87ebc9e42e60371e3ae",
+                "sha256:7834eba53c6bedea21eb76f25a39e477dede3a24aeb51ff19c0248ea8348f007"
+            ],
+            "version": "==1.12.4"
+        },
         "celery": {
             "git": "https://github.com/celery/celery.git",
-            "ref": "ba251fb588a9361aa1fea0cb673fd4f2cfe5c022"
+            "ref": "ed17e12b14051bac51b84593cf7c8cf21c77e010"
         },
         "click": {
             "hashes": [
@@ -26,6 +41,14 @@
                 "sha256:f15516df478d5a56180fbf80e68f206010e6d160fc39fa508b65e035fd75130b"
             ],
             "version": "==6.7"
+        },
+        "docutils": {
+            "hashes": [
+                "sha256:02aec4bd92ab067f6ff27a38a38a41173bf01bed8f89157768c1573f53e474a6",
+                "sha256:51e64ef2ebfb29cae1faa133b3710143496eca21c530f3f71424d77687764274",
+                "sha256:7a4bd47eaf6596e1295ecb11361139febe29b084a87bf005bf899f9a42edc3c6"
+            ],
+            "version": "==0.14"
         },
         "flask": {
             "hashes": [
@@ -64,6 +87,13 @@
             ],
             "version": "==2.10"
         },
+        "jmespath": {
+            "hashes": [
+                "sha256:6a81d4c9aa62caf061cb517b4d9ad1dd300374cd4706997aff9cd6aedd61fc64",
+                "sha256:f11b4461f425740a1d908e9a3f7365c3d2e569f6ca68a2ff8bc5bcd9676edd63"
+            ],
+            "version": "==0.9.3"
+        },
         "markupsafe": {
             "hashes": [
                 "sha256:a6be69091dac236ea9c6bc7d012beab42010fa914c459791d627dad4910eb665"
@@ -78,6 +108,14 @@
             "index": "pypi",
             "version": "==0.22.1"
         },
+        "python-dateutil": {
+            "hashes": [
+                "sha256:1adb80e7a782c12e52ef9a8182bebeb73f1d7e24e374397af06fb4956c8dc5c0",
+                "sha256:e27001de32f627c22380a688bcc43ce83504a7bc5da472209b4c70f02829f0b8"
+            ],
+            "markers": "python_version >= '2.7'",
+            "version": "==2.7.3"
+        },
         "redis": {
             "hashes": [
                 "sha256:8a1900a9f2a0a44ecf6e8b5eb3e967a9909dfed219ad66df094f27f7d6f330fb",
@@ -86,12 +124,27 @@
             "index": "pypi",
             "version": "==2.10.6"
         },
+        "s3transfer": {
+            "hashes": [
+                "sha256:90dc18e028989c609146e241ea153250be451e05ecc0c2832565231dacdf59c1",
+                "sha256:c7a9ec356982d5e9ab2d4b46391a7d6a950e2b04c472419f5fdec70cc0ada72f"
+            ],
+            "version": "==0.1.13"
+        },
         "six": {
             "hashes": [
                 "sha256:70e8a77beed4562e7f14fe23a786b54f6296e34344c23bc42f07b15018ff98e9",
                 "sha256:832dc0e10feb1aa2c68dcc57dbb658f1c7e65b9b61af69048abc87a2db00a0eb"
             ],
             "version": "==1.11.0"
+        },
+        "urllib3": {
+            "hashes": [
+                "sha256:a68ac5e15e76e7e5dd2b8f94007233e01effe3e50e8daddf69acfd81cb686baf",
+                "sha256:b5725a0bd4ba422ab0e66e89e030c806576753ea3ee08554382c14e685d117b5"
+            ],
+            "markers": "python_version != '3.2.*' and python_version != '3.1.*' and python_version >= '2.6' and python_version != '3.0.*' and python_version != '3.3.*' and python_version < '4'",
+            "version": "==1.23"
         },
         "werkzeug": {
             "hashes": [
@@ -102,11 +155,11 @@
         },
         "youtube-dl": {
             "hashes": [
-                "sha256:42c2e82280c943ce618969c3ceeea56666554f311e86a8082c72ec91a63885a9",
-                "sha256:fc7d1c9e69c44cdf3b11b056d382502e1851bdcd900ff0ced61b6c65d2e4098c"
+                "sha256:f3be4598bb5029299d46533d3a7bd94b3ff5e391ee2bd8dbbf70288c67cbc8a6",
+                "sha256:f5f52ce3a19c7018a2aa2a266f94755cc00a4faa5fd10f952e8925e2f45f256d"
             ],
             "index": "pypi",
-            "version": "==2018.9.8"
+            "version": "==2018.9.10"
         }
     },
     "develop": {
