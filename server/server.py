@@ -71,33 +71,3 @@ def status(type, task_id):
     else:
         response['status'] = task.state
     return jsonify(response)
-
-@app.route('/retrieve/<file>', methods=['GET'])
-@requires_authorization
-def send_file(file):
-    return Response(
-        stream(file),
-        mimetype="audio/mpeg",
-        content_type="application/octet-stream",
-        headers={"Access-Control-Expose-Headers": "Content-Disposition",
-                 "Content-disposition": f"attachment; filename={file}"}
-    )
-
-def stream(file):
-    """
-    Streams mp3 data in chunks to the client
-    """
-    path = os.path.dirname(__file__).split('server')[0]
-    file_path = f"{path}{file}"
-    try:
-        with open(file_path, 'rb') as mp3:
-            data = mp3.read(1024)
-            while data:
-                yield data
-                data = mp3.read(1024)
-    except FileNotFoundError:
-        error = 'Error streaming audio file'
-        print(error)
-        return error
-    finally:
-        tasks.delete_file(file_path)

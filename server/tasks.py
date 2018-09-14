@@ -1,6 +1,9 @@
 import os
 import subprocess
 
+import boto3
+from botocore.client import Config
+
 import redis
 import youtube_dl
 from celery import Celery
@@ -41,16 +44,37 @@ def m4a_to_mp3(file):
         outfile = file.split('.')[0] + '.mp3'
         sound = AudioSegment.from_file(file)
         sound.export(outfile, format="mp3")
-        return {'file': outfile, 'status': 'SUCCESS'}
+        url = upload_file_to_s3(outfile)
+        return {'file': outfile, 'status': 'SUCCESS', 'url': url}
     except Exception as e:
         print(e)
         return {'status': 'FAILED'}
     finally:
-        delete_file(file)
+        delete_files([file, outfile])
 
-def delete_file(file):
+def upload_file_to_s3(file):
+    s3 = boto3.client('s3', config=Config(
+        s3={'addressing_style': 'path'}, signature_version='s3v4')
+    )
+    bucket = 'mp3-download-storage'
+    s3.upload_file(file, bucket, file)
+
+    url = s3.generate_presigned_url(
+        ClientMethod='get_object',
+        Params={
+            'Bucket': bucket,
+            'Key': file,
+            "ResponseContentDisposition": f"attachment; filename={file}",
+            "ResponseContentType" : "application/octet-stream"
+        },
+        ExpiresIn=500
+    )
+    return url
+
+def delete_files(files):
     try:
-        os.remove(file)
+        for file in files:
+            os.remove(file)
     except FileNotFoundError:
         error = 'Audio file does not exist'
         print(error)
