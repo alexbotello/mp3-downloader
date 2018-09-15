@@ -1,6 +1,7 @@
 import os
 import functools
 
+import boto3
 from flask_cors import CORS
 from flask import Flask, Response, jsonify, request, url_for
 
@@ -71,3 +72,15 @@ def status(type, task_id):
     else:
         response['status'] = task.state
     return jsonify(response)
+
+@app.route('/delete', methods=['GET'])
+@requires_authorization
+def delete_from_s3():
+    try:
+        s3 = boto3.resource('s3')
+        bucket = s3.Bucket('mp3-download-storage')
+        bucket.objects.all().delete()
+        return jsonify({"msg": "S3 storage was cleared"})
+    except Exception as e:
+        return jsonify(e)
+
