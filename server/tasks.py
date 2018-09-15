@@ -53,7 +53,7 @@ def m4a_to_mp3(file):
         delete_files([file, outfile])
 
 def upload_file_to_s3(file):
-    s3 = boto3.client('s3', config=Config(
+    s3 = boto3.client('s3', 'us-east-2', config=Config(
         s3={'addressing_style': 'path'}, signature_version='s3v4')
     )
     bucket = 'mp3-download-storage'
