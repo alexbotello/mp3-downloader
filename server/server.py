@@ -78,8 +78,7 @@ def status(type, task_id):
 def delete_from_s3():
     try:
         s3 = boto3.resource('s3')
-        bucket = s3.Bucket('mp3-download-storage')
-        bucket.objects.all().delete()
+        s3.Object('mp3-download-storage', file).delete()
         return jsonify({"msg": "S3 storage was cleared"})
     except Exception as e:
         return jsonify(e)
