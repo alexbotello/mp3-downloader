@@ -13,7 +13,6 @@ from utils import extract_audio, m4a_to_mp3, generate
 tasks = {}
 
 app = Starlette()
-app.add_middleware(TrustedHostMiddleware, allowed_hosts=[os.environ["HOST"]])
 app.add_middleware(CORSMiddleware, allow_origins=[os.environ["ORIGIN"]])
 
 
