@@ -17,7 +17,7 @@ app.add_middleware(CORSMiddleware, allow_origins=[os.environ["ORIGIN"]])
 
 
 @app.route("/", methods=["GET"])
-def home():
+async def home(request):
     return UJSONResponse({"msg": "api is running"})
 
 
