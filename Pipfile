@@ -4,14 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-flask = "*"
-flask-cors = "*"
-gunicorn = "*"
-redis = "*"
-celery = {ref = "master", git = "https://github.com/celery/celery.git"}
 pydub = "*"
 youtube-dl = "*"
-"boto3" = "*"
+starlette = "*"
+uvicorn = "*"
+ujson = "*"
 
 [dev-packages]
 pylint = "*"

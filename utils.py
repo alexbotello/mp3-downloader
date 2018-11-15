@@ -4,7 +4,7 @@ import youtube_dl
 from pydub import AudioSegment
 
 
-def extract_audio(url):
+def extract_audio(url, task_id=None, state=None):
     """
     Extracts m4a audio from youtube video
     """
@@ -16,20 +16,15 @@ def extract_audio(url):
         "outtmpl": "%(title)s.%(ext)s",
     }
     try:
-        print(url)
         with youtube_dl.YoutubeDL(options) as ytdl:
             result = ytdl.extract_info(url, download=True)
-            print(result)
             file = result["title"] + ".m4a"
-        # state[task_id] = {"file": file, "status": "Complete"}
-        return {"file": file, "status": "Complete"}
+        state[task_id] = {"file": file, "status": "Complete"}
     except youtube_dl.utils.DownloadError:
-        print("error")
-        # state[task_id] = {"status": "Failed"}
-        return {"status": "Failed"}
+        state[task_id] = {"status": "Failed"}
 
 
-def m4a_to_mp3(file, id=None, state=None):
+def m4a_to_mp3(file, task_id=None, state=None):
     """
     Converts from m4a to mp3 using ffmpeg
     """
@@ -37,19 +32,17 @@ def m4a_to_mp3(file, id=None, state=None):
         outfile = file.split(".")[0] + ".mp3"
         sound = AudioSegment.from_file(file)
         sound.export(outfile, format="mp3")
-        state.update(id, {"file": outfile, "status": "Complete"})
+        state[task_id] = {"file": outfile, "status": "Complete"}
     except Exception as e:
-        print(e)
-        state.update(id, {"status": "Failed"})
-
-
-def delete_files(file):
-    try:
+        state[task_id] = {"status": "Failed"}
+    finally:
         os.remove(file)
-    except FileNotFoundError:
-        error = "Audio file does not exist"
-        print(error)
-        return error
 
-if __name__ == "__main__":
-    extract_audio("https://www.youtube.com/watch?v=ZL4MGwlZuAc")
+
+async def generate(file):
+    with open(file, "rb") as mp3:
+        data = mp3.read(1024)
+        while data:
+            yield data
+            data = mp3.read(1024)
+    os.remove(file)
