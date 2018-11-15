@@ -75,7 +75,3 @@ async def stream_files(request):
             "content-type": "application/octet-stream",
         },
     )
-
-
-if __name__ == "__main__":
-    uvicorn.run(app)
