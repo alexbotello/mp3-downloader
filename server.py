@@ -14,7 +14,7 @@ tasks = {}
 app = Starlette()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[os.environ["ORIGIN"]],
+    allow_origins=["*"],
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
