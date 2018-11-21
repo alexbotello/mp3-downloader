@@ -4,7 +4,6 @@ import uvicorn
 
 from starlette.applications import Starlette
 from starlette.middleware.cors import CORSMiddleware
-from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.responses import UJSONResponse, StreamingResponse
 from starlette.background import BackgroundTask
 
@@ -13,7 +12,12 @@ from utils import extract_audio, m4a_to_mp3, generate
 tasks = {}
 
 app = Starlette()
-app.add_middleware(CORSMiddleware, allow_origins=[os.environ["ORIGIN"]])
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[os.environ["ORIGIN"]],
+    allow_methods=["GET, POST"],
+    allow_headers=["*"],
+)
 
 
 @app.route("/", methods=["GET"])
