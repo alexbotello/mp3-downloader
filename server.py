@@ -64,7 +64,7 @@ async def status(request):
     if result is not None and result["status"] is "Pending":
         return UJSONResponse(result)
 
-    del tasks[task_id]
+    tasks.pop(task_id, None)
     return UJSONResponse(result)
 
 
